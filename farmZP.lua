@@ -1,31 +1,6 @@
 script_name('{20a1d4}FarmZP by {e38329}yargoff')
 script_author('{ff7e14}yargoff')
-script_version("1.5.0") 
-
-local log = {
-
-'{c4a549}[18.01.26] {FFFFFF}1.0 - Простой скриптик для бега по кордам',
-'{FFFFFF}ver. 1.1 - Переделан скрипт под автопереодевание формы и перезахода на другое место спавна для АФК фарма ЗП',
-'{FFFFFF}ver. 1.2 - Добавлен inicfg для более удобного взаимодействия',
-'{FFFFFF}ver. 1.3 - Доработан скрипт до нужного результата, чуть исправлен код',
-'{c4a549}[01.02.26] {FFFFFF}ver. 1.3.1 - Добавлено автообновление, но работает коряво, выдает timeout по кд',
-'{FFFFFF}ver. 1.3.1.1 - Вырезано автообновление ( возможно когда-то верну, когда освою по нормальному его )',
-'{FFFFFF}ver. 1.3.2 - Исправление кода, его адаптация',
-'{FFFFFF}ver. 1.3.3 - Добавлена проверка статистики игрока на наличие организации, а так же команда для указания наличия/отсутствия add vip (по умолчанию: отсутствует)',
-'{FFFFFF}ver. 1.3.3.1 - Исправлен баг с выбором спавна после переодевания в форму ПДшника',
-'{c4a549}[03.02.26] {FFFFFF}ver. 1.4 - Добавлено mimgui', 
-'{c4a549}[04.02.26] {FFFFFF}ver. 1.4.0.1 - Отредактированы некоторые задержки, добавил открытие/закрытие меню :)', 
-'{c4a549}[05.02.26] {FFFFFF}ver. 1.4.0.2 - Незначительные изменения кода // Добавление картинок из fAwesome6 // Задел под взаимодействие с Телеграммом',
-'{c4a549}[06.02.26] {FFFFFF}ver. 1.4.5 - Отказался от inicfg в пользу JSON таблиц с использованием IO. Переделал немного меню под работу с JSON.',
-'Переработал схему спавна как для тех кто имеет AddVip, так и не имеющих это дополнение.',
-'[Работу с AddVip не проверял, потому что не имею её на том аккаунте на котором нахожусь в этот момент]',
-'{c4a549}[08.02.26] {FFFFFF}ver. 1.4.6 - Добавил пункт с льготой',
-'{c4a549}[15.02.26 - 16.02.26] {FFFFFF}ver. 1.5.0 - Добавил запись ника. Доделал работу скрипта, если у пользователя имеется AddVip [Все работает ;)] '
-
-}
-
---https://raw.githubusercontent.com/yarg0/FarmZP-in-all-PD/main/version.json?
---https://github.com/yarg0/FarmZP-in-all-PD
+script_version("1.6a")
 
 require('lib.moonloader')
 local ev = require('samp.events')
@@ -36,82 +11,136 @@ encoding.default = 'CP1251'
 local u8 = encoding.UTF8
 local faicons = require('fAwesome6')
 
+local log = {
+
+'{c4a549}[18.01.26] {FFFFFF}0.1b - Простой скриптик для бега по кордам',
+'{FFFFFF}ver. 0.5b - Переделан скрипт под автопереодевание формы и перезахода на другое место спавна для АФК фарма ЗП',
+'{FFFFFF}ver. 0.5.1b - Добавлен inicfg для более удобного взаимодействия',
+'{FFFFFF}ver. pre 1a - Доработан скрипт до нужного результата, чуть исправлен код',
+'{FFFFFF}ver. 1.1a - Исправление кода, оптимизация',
+'{FFFFFF}ver. 1.3a - Добавлена проверка статистики игрока на наличие организации, а так же команда для указания наличия/отсутствия add vip (по умолчанию: отсутствует)',
+'{FFFFFF}ver. 1.3.1a - Исправлен баг с выбором спавна после переодевания в форму ПДшника',
+'{c4a549}[03.02.26] {FFFFFF}ver. 1.4a - Добавлено mimgui', 
+'{c4a549}[04.02.26] {FFFFFF}ver. 1.4.1a - Отредактированы некоторые задержки, добавил открытие/закрытие меню :)', 
+'{c4a549}[05.02.26] {FFFFFF}ver. 1.4.2a - Незначительные изменения кода // Добавление картинок из fAwesome6 // Задел под взаимодействие с Телеграммом',
+'{c4a549}[06.02.26] {FFFFFF}ver. 1.5a - Отказался от inicfg в пользу JSON таблиц с использованием IO. Переделал немного меню под работу с JSON.',
+'Переработал схему спавна как для тех кто имеет AddVip, так и не имеющих это дополнение.',
+'[Работу с AddVip не проверял, потому что не имею её на том аккаунте на котором нахожусь в этот момент]',
+'{c4a549}[08.02.26] {FFFFFF}ver. 1.5.2a - Добавил пункт с льготой',
+'{c4a549}[15.02.26 - 16.02.26] {FFFFFF}ver. 1.5.5a - Добавил запись ника. Доделал работу скрипта, если у пользователя имеется AddVip [Все работает ;)] ',
+'{c4a549}[08.04.26 - 09.04.26] {FFFFFF}ver. 1.6a - После некоторого затишься возвращаюсь к работе.',
+'Из нового: 1. Парс wbook с автопополнением льготы (в будущем буду делать, чтобы пользователь сам все настраивал под себя),',
+'2. Пока только для FBI отображнение кнопок для быстрого выполнения заданий и их окрас (зеленый/красный), обозначающий выполнено/не выполнено,',
+'3. Автопополнение льготы с наступлением нового дня (После пользователь сам будет менять когда проверять уровень льготы)',
+'4. Отказ от идеи с взаимодействием через Телеграмм',
+'{c4a549}[12.04.26 - 13.04.26] {FFFFFF}ver. 1.8a - В связи с выходном новой обновы теперь: 1. Автопополнения льготы - нет;', 
+'2. Для тех у кого нет ADD VIP работать не будет (функционал вырезан);', 
+'3. Переработан автовход в игру (Работает теперь только на новом виде авторизации)'
+
+}
+
+local command = {
+    '/menuzp - Открыть меню',
+    '/addcoord - добавить координаты'
+}
+
 local tag = '{20a1d4}[ФАРМ ЗП]{FFFFFF}'
+local base_color = 0x29c2ff
 
-local function generate_path(p)
-    return getWorkingDirectory() .. '/' .. p
-end
-
-do
-    local function jsoncfg_save(data, path)
-        if doesFileExist(path) then os.remove(path) end
-        if type(data) ~= 'table' then return end
-        local f = io.open(path, 'a+')
-        f:write(encodeJson(data))
-        f:close()
+function json(filePath)
+    local filePath = getWorkingDirectory()..'\\config\\'..(filePath:find('(.+).json') and filePath or filePath..'.json')
+    local class = {}
+    if not doesDirectoryExist(getWorkingDirectory()..'\\config') then
+        createDirectory(getWorkingDirectory()..'\\config')
     end
-    local function jsoncfg_load(data, path)
-        if doesFileExist(path) then
-            local f = io.open(path, 'r')
-            local d = decodeJson(f:read('*a'))
-            f:close()
-            return d
-        else
-            jsoncfg_save(data, path)
-            return data
+    
+    function class:Save(tbl)
+        if tbl then
+            local F = io.open(filePath, 'w')
+            F:write(encodeJson(tbl) or {})
+            F:close()
+            return true, 'ok'
         end
+        return false, 'table = nil'
     end
-    jsoncfg = {
-        save = jsoncfg_save,
-        load = jsoncfg_load
-    }
+
+    function class:Load(defaultTable)
+        if not doesFileExist(filePath) then
+            class:Save(defaultTable or {})
+        end
+        local F = io.open(filePath, 'r+')
+        local TABLE = decodeJson(F:read() or {})
+        F:close()
+        for def_k, def_v in next, defaultTable do
+            if TABLE[def_k] == nil then
+                TABLE[def_k] = def_v
+            end
+        end
+        return TABLE
+    end
+
+    return class
 end
 
-
-local yargoffConfig = jsoncfg.load({
+local name_file = 'FarmZP.json'
+local settings = json(name_file):Load({
     status = false,
-    addvip = false,
+    runStripuha = false,             -- Автобег в стрипухе
     OrganizationalSkin = 0,          -- ID скина (число)
     Organization = "",               -- имя организации
     nickname = "",                   -- Ник пользователя скрипта
-    prioritySetSpawn = {},           -- приоритет спавна через /setspawn [кто не имеет AddVip] (массив)
     priorityAddVip = {},             -- приоритет спавна для тех у кого есть AddVip (массив)
-    SpawnOrg = {},                   -- Cпавн орагнизационный (массив)
-    dialog_setspawn = {},            -- пункты диалога (массив строк)
-    dialog_setspawnAddVip = {},      -- пункты диалога add vip (массив строк)
+    SpawnOrg = {},                   -- Cпавн организационный (массив)
+    dialog_setspawnAddVip = {        -- пункты диалога add vip (массив строк)
+        id = '',
+        name = ''
+    },
     interior_org = 0,                -- id интерьера фракции
     interior_afk = 0,                -- id интерьера места для АФК
-    TG_iduser = "",
-    TG_keyBot = ""
-}, generate_path('config/yargoffConfig.json'))
+})
 
 local function save_settings()
-    jsoncfg.save(yargoffConfig, generate_path('config/yargoffConfig.json'))
+    json(name_file):Save(settings)
+end
+
+local function message(text)
+    if not text or text == '' then
+        return
+    end
+    sampAddChatMessage(tag..' '..text, base_color)
 end
 
 -- Гарантируем, что нужные поля существуют
-yargoffConfig.prioritySetSpawn = yargoffConfig.prioritySetSpawn or {}
-yargoffConfig.priorityAddVip = yargoffConfig.priorityAddVip or {}
-yargoffConfig.SpawnOrg = yargoffConfig.SpawnOrg or {}
-yargoffConfig.dialog_setspawn = yargoffConfig.dialog_setspawn or {}
-yargoffConfig.dialog_setspawnAddVip = yargoffConfig.dialog_setspawnAddVip or {}
+settings.prioritySetSpawn = settings.prioritySetSpawn or {}
+settings.priorityAddVip = settings.priorityAddVip or {}
+settings.SpawnOrg = settings.SpawnOrg or {}
+settings.dialog_setspawnAddVip = settings.dialog_setspawnAddVip or {}
 
-local iniCoordsPD = getWorkingDirectory() .. "\\IziCoord\\coordPD.txt" -- Путь к txt файлу
+local iniCoordsPD = getWorkingDirectory() .. "\\config\\coordPD.txt" -- Путь к txt файлу
+local iniCoordsStripuha = getWorkingDirectory() .. "\\config\\coordStripuha.txt" -- Путь к txt файлу
 
-local statsRetryCount = 0 -- Повторение попыток узнать в какой организации игрок
-local maxRetries = 3 -- Кол-во попыток
+---------------------------------------------------------- ПЕРЕМЕННЫЕ ----------------------------------------------------------
 
-local maxAttempts = 10
-local attempts = 0
-local fastObject = false
-
+local fastpass = false
+local fastobisk = false
+local oneUse = false
+local findplayer = false; local seekplayer = nil
 local spawnOrgAddVip = true
-local checkOrganization = false
-local spawnSleep = false
-local spawnOrga = false
 local runPD = false
+local runStrip = false
 local xaa = 0
 local yaa = 0
+local autoAFKn = 0
+local autoAFK = false
+
+local inputField_idOrganizationalSkin = imgui.new.char[256]() -- Вписывание чего-либо в строчку
+local clickbutton = imgui.new.bool(settings.status)
+local runStripuha = imgui.new.bool(settings.runStripuha)
+local tab = 0 -- выбирать между логом и командами скрипта в mimgui
+
+local WinState = imgui.new.bool(false) -- Открытие/Закрытие основного окна
+
+----------------------------------------------------------------------------------------------------------------------------------
 
 imgui.OnInitialize(function()
     imgui.GetIO().IniFilename = nil
@@ -123,22 +152,11 @@ imgui.OnInitialize(function()
     theme()
 end)
 
-local inputField_idOrganizationalSkin = imgui.new.char[256]() -- Вписывание чего-либо в строчку
-
-local clickbutton = imgui.new.bool(yargoffConfig.status)
-local have_addvip = imgui.new.bool(yargoffConfig.addvip)
-
-local color = imgui.new.float[4](1, 1, 1, 1) -- Настройка цвета
-
-local tab = 0 -- выбирать между логом и командами скрипта в mimgui
-
-local WinState = imgui.new.bool(false) -- Открытие/Закрытие основного окна
-
 -- Синхронизация с сохранённым приоритетом спавна в Организации
-if #yargoffConfig.SpawnOrg > 0 then
-    selected_name_SpawnOrg = yargoffConfig.SpawnOrg[1]
+if #settings.SpawnOrg > 0 then
+    selected_name_SpawnOrg = settings.SpawnOrg[1]
     -- Найдём индекс в списке
-    for i, name in ipairs(yargoffConfig.dialog_setspawn) do
+    for i, name in ipairs(settings.dialog_setspawnAddVip) do
         if name == selected_name_SpawnOrg then
             selected_idx_SpawnOrg = i
             break
@@ -148,12 +166,11 @@ else
     selected_name_SpawnOrg = "Выберите место организационного спавна"
     selected_idx_SpawnOrg = 1  -- по умолчанию
 end
-
 -- Синхронизация с сохранённым приоритетом АФК спавна [кто имеет add vip]
-if #yargoffConfig.prioritySetSpawn > 0 then
-    selected_name_HaveAddVip = yargoffConfig.prioritySetSpawn[1]
+if #settings.prioritySetSpawn > 0 then
+    selected_name_HaveAddVip = settings.prioritySetSpawn[1]
     -- Найдём индекс в списке
-    for i, name in ipairs(yargoffConfig.dialog_setspawn) do
+    for i, name in ipairs(settings.dialog_setspawnAddVip) do
         if name == selected_name_HaveAddVip then
             selected_idx_HaveAddVip = i
             break
@@ -164,26 +181,42 @@ else
     selected_idx_HaveAddVip = 1  -- по умолчанию
 end
 
--- Синхронизация с сохранённым приоритетом АФК спавна [кто не имеет add vip]
-if #yargoffConfig.prioritySetSpawn > 0 then
-    selected_name_notAddVip = yargoffConfig.prioritySetSpawn[1]
-    -- Найдём индекс в списке
-    for i, name in ipairs(yargoffConfig.dialog_setspawn) do
-        if name == selected_name_notAddVip then
-            selected_idx_notAddVip = i
-            break
+local function getSortedSpawnList()
+    local list = {}
+
+    -- Проверяем существование и тип settings.dialog_setspawnAddVip
+    if not settings or not settings.dialog_setspawnAddVip or type(settings.dialog_setspawnAddVip) ~= "table" then
+        return list
+    end
+
+    for _, v in pairs(settings.dialog_setspawnAddVip) do
+        -- Проверяем наличие полей name и id
+        if v and v.name and v.id ~= nil then
+            -- Преобразуем id из строки в число, если это возможно
+            local idNum = tonumber(v.id)
+            if idNum ~= nil then
+                -- Создаём копию элемента с числовым id для корректной сортировки
+                table.insert(list, {
+                    name = v.name,
+            id = idNum
+                })
+            end
         end
     end
-else
-    selected_name_notAddVip = "Выберите место спавна"
-    selected_idx_notAddVip = 1  -- по умолчанию
+
+    -- Сортируем по числовому id по возрастанию
+    table.sort(list, function(a, b)
+        return a.id < b.id
+    end)
+
+    return list
 end
 
 imgui.OnFrame(
 function () return WinState[0] end,
 function (this)
 
-    local size, res = imgui.ImVec2(600, 270), imgui.ImVec2(getScreenResolution())
+    local size, res = imgui.ImVec2(350, 260), imgui.ImVec2(getScreenResolution())
     imgui.SetNextWindowSize(size, imgui.Cond.FirstUseEver)
     --imgui.SetNextWindowPos(imgui.ImVec2(res.x / 2, res.y / 2), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
     imgui.SetNextWindowPos(imgui.ImVec2(320, 625), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
@@ -192,46 +225,18 @@ function (this)
         if imgui.BeginTabBar('Tabs') then -- задаём начало вкладок
 
             if imgui.BeginTabItem(faicons('house')..u8' Основное меню') then -- первая вкладка
-            
+             
                 imgui.CenterText(faicons('id_badge')..u8' Основные настройки скрипта '..faicons('id_badge'))
 
-                imgui.TextColoredRGB('Ваш ник - '..yargoffConfig.nickname)
-
                 if imgui.Checkbox(faicons('jedi')..u8(' АФК ЗП'), clickbutton) then
-                    yargoffConfig.status = clickbutton[0]
+                    settings.status = clickbutton[0]
                     save_settings()
-                    sampAddChatMessage(tag..' АФК ЗП - '..(yargoffConfig.status and '{3fc441}Включено' or '{e82c39}Выключено'), -1)
-                end
-
-                imgui.SameLine()
-                imgui.TextColoredRGB('- '..(yargoffConfig.status and '{3fc441}Включено' or '{e82c39}Выключено'))
-                if yargoffConfig.status then
-                    imgui.SameLine()
-                    imgui.Text(faicons('check'))
-                else
-                    imgui.SameLine()
-                    imgui.Text(faicons('Xmark'))
-                end
-                if imgui.Checkbox(faicons('chess_king')..u8' ADD VIP', have_addvip) then
-                    yargoffConfig.addvip = have_addvip[0]
-                    save_settings()
-                    sampAddChatMessage(tag..' Вы установили, что '..(yargoffConfig.addvip and '{3fc441}имеете' or '{e82c39}не имеете')..' {FFFFFF}Add Vip, теперь скрипт будет работать по другому методу', -1)
-                end
-                
-                imgui.SameLine()
-                imgui.TextColoredRGB('- '..(yargoffConfig.addvip and '{3fc441}Имеется' or '{e82c39}Отсутствует'))
-                if yargoffConfig.addvip then
-                    imgui.SameLine()
-                    imgui.Text(faicons('check'))
-                else
-                    imgui.SameLine()
-                    imgui.Text(faicons('Xmark'))
                 end
                 imgui.Separator()
-
                 imgui.CenterText(faicons('helmet_safety')..u8' ID организационного скина '..faicons('helmet_safety'))
+                imgui.Text(u8('На данный момент в CFG внесен id скина - '..(settings.OrganizationalSkin)))
                 imgui.PushItemWidth(215)
-                imgui.InputTextWithHint(u8'На данный момент в CFG внесен id скина - '..(yargoffConfig.OrganizationalSkin), u8'Введите организационный id скина', inputField_idOrganizationalSkin, 256)
+                imgui.InputTextWithHint(u8'##323124124214', u8'Введите организационный id скина', inputField_idOrganizationalSkin, 256)
                 imgui.PopItemWidth()
                 if imgui.Button(faicons('pen'), imgui.ImVec2(25, 25)) then
                     text = u8:decode(ffi.string(inputField_idOrganizationalSkin))
@@ -243,51 +248,39 @@ function (this)
                     end
 
                     if text ~= '' then
-                        local oldOrg = yargoffConfig.OrganizationalSkin or "Отсутствует"
+                        local oldOrg = settings.OrganizationalSkin or "Отсутствует"
                         -- Если отличается — обновляем
                         if text ~= oldOrg then
-                            yargoffConfig.OrganizationalSkin = text
+                            settings.OrganizationalSkin = text
                             save_settings()
-                            sampAddChatMessage(tag .. " Внесен вручную новый id организационного скина - "..text, -1)
-                            sampAddChatMessage(tag .. " Заменено в CFG (До этого был id: " .. oldOrg .. ")", -1)
+                            sampAddChatMessage(tag .. " Внесен вручную новый id организационного скина - " .. text, base_color)
+                            sampAddChatMessage(tag .. " Заменено в CFG (До этого был id: " .. oldOrg .. ")", base_color)
                         else
-                            sampAddChatMessage(tag .. " ID организационного скина уже записан - " .. text, -1)
+                            sampAddChatMessage(tag .. " ID организационного скина уже записан - " .. text, base_color)
                         end
                     else
-                        sampAddChatMessage(tag .. " Вы ничего не написали в поле..", -1)
+                        sampAddChatMessage(tag .. " Вы ничего не написали в поле..", base_color)
                     end
-
-                    if imgui.IsItemHovered() then
-                        imgui.BeginTooltip()
-                        imgui.Text(u8'Вы навелись на кнопку')
-                        imgui.EndTooltip()
-                    end
-
                 end
-                imgui.Hint('hintSecret', faicons('circle_exclamation')..u8' Подсказка:\nКнопка для ручного добавления ID скина.')
+                if imgui.IsItemHovered() then
+                    imgui.BeginTooltip()
+                    imgui.Text(u8'Ввести ID скина вручную')
+                    imgui.EndTooltip()
+                end
 
                 imgui.SameLine()
                 if imgui.Button(u8'Внести автоматически', imgui.ImVec2(140, 25)) then
                     local id_skin = getCharModel(PLAYER_PED)
-                    local oldOrg = yargoffConfig.OrganizationalSkin or "Отсутствует"
+                    local oldOrg = settings.OrganizationalSkin or "Отсутствует"
                     -- Если отличается — обновляем
                     if id_skin ~= oldOrg then
-                        yargoffConfig.OrganizationalSkin = id_skin
+                        settings.OrganizationalSkin = id_skin
                         save_settings()
-                        sampAddChatMessage(tag .. " Записываю новый id организационного скина - "..id_skin, -1)
-                        sampAddChatMessage(tag .. " Заменено в CFG (До этого был id: " .. oldOrg .. ")", -1)
+                        sampAddChatMessage(tag .. " Записываю новый id организационного скина - " .. id_skin, base_color)
+                        sampAddChatMessage(tag .. " Заменено в CFG (До этого был id: " .. oldOrg .. ")", base_color)
                     else
-                        sampAddChatMessage(tag .. " ID организационного скина уже записан - " .. id_skin, -1)
+                        sampAddChatMessage(tag .. " ID организационного скина уже записан - " .. id_skin, base_color)
                     end
-                end
-                imgui.Separator()
-
-                imgui.CenterText(faicons('hamsa')..u8' Наименование вашей организации '..faicons('hamsa'))
-                imgui.CenterText(u8(yargoffConfig.Organization))
-                imgui.SetCursorPos(imgui.ImVec2(260, 235))
-                if imgui.Button(u8'Определить', imgui.ImVec2(80, 25)) then
-                    checkOrganization = true
-                    sampProcessChatInput('/stats')
                 end
 
                 imgui.EndTabItem() -- конец вкладки
@@ -297,180 +290,118 @@ function (this)
                 if imgui.BeginTabBar('Tabs') then -- задаём начало вкладок
                 
                     if imgui.BeginTabItem(faicons('Angles_Right')..u8' Меню спавна') then -- первая вкладка
-                        if yargoffConfig.addvip then
-                            imgui.TextColoredRGB('                                                  {FFFFFF}У вас {3fc441}присутствует {FFFFFF}ADD VIP')
+                    
+                        if imgui.Checkbox(u8'Автострипуха', runStripuha) then
+                            settings.runStripuha = runStripuha[0]
+                            save_settings()
+                        end
+                    
+                        -- Получаем текущий приоритет (первый элемент, если есть)
+                        local current_prioritySpawnOrg = "не выбрано"
+                        if #settings.SpawnOrg > 0 then
+                            current_prioritySpawnOrg = settings.SpawnOrg[1]
+                        end
 
-                            -- Получаем текущий приоритет (первый элемент, если есть)
-                            local current_prioritySpawnOrg = "не выбрано"
-                            if #yargoffConfig.SpawnOrg > 0 then
-                                current_prioritySpawnOrg = yargoffConfig.SpawnOrg[1]
-                            end
+                        -- Отображаем текст "Приоритет: ..."
+                        imgui.Text(u8"Организационный спавн: " .. u8(current_prioritySpawnOrg))
 
-                            -- Отображаем текст "Приоритет: ..."
-                            imgui.Text(u8"Организационный спавн: " .. u8(current_prioritySpawnOrg))
+                        local sortedList = getSortedSpawnList()
 
-                            -- Защита: если список пуст
-                            if #yargoffConfig.dialog_setspawnAddVip == 0 then
-                                imgui.TextColoredRGB('{e82c39}Список мест спавна пуст. Подгрузите список перезайдя на сервер')
-                            else
-                                -- Выпадающий список
-                                if imgui.BeginCombo(u8"##Пункты диалога для ОРГ спавна", u8(selected_name_SpawnOrg or "Выберите место")) then
-                                    for i, name in ipairs(yargoffConfig.dialog_setspawnAddVip) do
-                                        -- ?? is_selected ДОЛЖЕН быть true/false, НЕ nil
-                                        local is_selected = (selected_idx_SpawnOrg == i)
-
-                                        -- Защита от nil в name
-                                        if name and type(name) == "string" then
-                                            if imgui.Selectable(u8(name), is_selected) then
-                                                selected_idx_SpawnOrg = i
-                                                selected_name_SpawnOrg = name
-                                                yargoffConfig.SpawnOrg = { name }
-                                                save_settings()
-                                            end
-
-                                            -- Подсветка выбранного элемента
-                                            if is_selected then
-                                                imgui.SetItemDefaultFocus()
-                                            end
-                                        end
-                                    end
-                                    imgui.EndCombo()
-                                end
-                            end
-
-                            -- Получаем текущий приоритет (первый элемент, если есть)
-                            local current_priority = "не выбрано"
-                            if #yargoffConfig.priorityAddVip > 0 then
-                                current_priority = yargoffConfig.priorityAddVip[1]
-                            end
-
-                            -- Отображаем текст "Приоритет: ..."
-                            imgui.Text(u8"Приоритетный спавн для АФК: " .. u8(current_priority))
-
-                            -- Защита: если список пуст
-                            if #yargoffConfig.dialog_setspawnAddVip == 0 then
-                                imgui.TextColoredRGB('{e82c39}Список мест спавна пуст. Подгрузите список перезайдя на сервер')
-                            else
-                                -- Выпадающий список
-                                if imgui.BeginCombo(u8"##Пункты диалога", u8(selected_name_HaveAddVip or "Выберите место")) then
-                                    for i, name in ipairs(yargoffConfig.dialog_setspawnAddVip) do
-                                        -- ?? is_selected ДОЛЖЕН быть true/false, НЕ nil
-                                        local is_selected = (selected_idx_HaveAddVip == i)
-
-                                        -- Защита от nil в name
-                                        if name and type(name) == "string" then
-                                            if imgui.Selectable(u8(name), is_selected) then
-                                                selected_idx_HaveAddVip = i
-                                                selected_name_HaveAddVip = name
-                                                yargoffConfig.priorityAddVip = { name }
-                                                save_settings()
-                                            end
-
-                                            -- Подсветка выбранного элемента
-                                            if is_selected then
-                                                imgui.SetItemDefaultFocus()
-                                            end
-                                        end
-                                    end
-                                    imgui.EndCombo()
-                                end
-                            end
+                        if #sortedList == 0 then
+                            imgui.TextColoredRGB('{e82c39}Список мест спавна пуст. Подгрузите список перезайдя на сервер')
                         else
-                            imgui.TextColoredRGB('                                                   {FFFFFF}У вас {e82c39}отсутствует {FFFFFF}ADD VIP')
-                            
-                            -- Получаем текущий приоритет (первый элемент, если есть)
-                            local current_priority = "не выбрано"
-                            if #yargoffConfig.prioritySetSpawn > 0 then
-                                current_priority = yargoffConfig.prioritySetSpawn[1]
-                            end
+                            if imgui.BeginCombo(u8"##Пункты диалога для ОРГ спавна", u8(selected_name_SpawnOrg or "Выберите место")) then
+                                
+                                for _, v in ipairs(sortedList) do
+                                    local is_selected = (selected_name_SpawnOrg == v.name)
 
-                            -- Отображаем текст "Приоритет: ..."
-                            imgui.Text(u8"Приоритетный спавн для АФК: " .. u8(current_priority))
-
-                            -- Защита: если список пуст
-                            if #yargoffConfig.dialog_setspawn == 0 then
-                                imgui.TextColoredRGB('{e82c39}Список мест спавна пуст. Подгрузите список через /setspawn.')
-                            else
-                                -- Выпадающий список
-                                if imgui.BeginCombo(u8"##Пункты диалога", u8(selected_name_notAddVip or "Выберите место")) then
-                                    for i, name in ipairs(yargoffConfig.dialog_setspawn) do
-                                        -- ?? is_selected ДОЛЖЕН быть true/false, НЕ nil
-                                        local is_selected = (selected_idx_notAddVip == i)
-
-                                        -- Защита от nil в name
-                                        if name and type(name) == "string" then
-                                            if imgui.Selectable(u8(name), is_selected) then
-                                                selected_idx_notAddVip = i
-                                                selected_name_notAddVip = name
-                                                yargoffConfig.prioritySetSpawn = { name }
-                                                save_settings()
-                                            end
-
-                                            -- Подсветка выбранного элемента
-                                            if is_selected then
-                                                imgui.SetItemDefaultFocus()
-                                            end
-                                        end
+                                    if imgui.Selectable(u8(v.name), is_selected) then
+                                        selected_name_SpawnOrg = v.name
+                                        settings.SpawnOrg = { v.name }
+                                        save_settings()
                                     end
-                                    imgui.EndCombo()
+
+                                    if is_selected then
+                                        imgui.SetItemDefaultFocus()
+                                    end
                                 end
+
+                                imgui.EndCombo()
+                            end
+                        end
+
+                        -- Получаем текущий приоритет (первый элемент, если есть)
+                        local current_priority = "не выбрано"
+                        if #settings.priorityAddVip > 0 then
+                            current_priority = settings.priorityAddVip[1]
+                        end
+
+                        -- Отображаем текст "Приоритет: ..."
+                        imgui.Text(u8"Приоритетный спавн для АФК: " .. u8(current_priority))
+
+                        local sortedList = getSortedSpawnList()
+
+                        if #sortedList == 0 then
+                            imgui.TextColoredRGB('{e82c39}Список мест спавна пуст. Подгрузите список перезайдя на сервер')
+                        else
+                            if imgui.BeginCombo(u8"##Пункты диалогаADDVIP", u8(selected_name_HaveAddVip or "Выберите место спавна")) then
+                                
+                                for _, v in ipairs(sortedList) do
+                                    local is_selected = (selected_name_HaveAddVip == v.name)
+
+                                    if imgui.Selectable(u8(v.name), is_selected) then
+                                        selected_name_HaveAddVip = v.name
+                                        settings.priorityAddVip = { v.name }
+                                        save_settings()
+                                    end
+
+                                    if is_selected then
+                                        imgui.SetItemDefaultFocus()
+                                    end
+                                end
+
+                                imgui.EndCombo()
                             end
                         end
                         imgui.EndTabItem() -- конец вкладки
                     end
                     if imgui.BeginTabItem(faicons('Angles_Right')..u8' ID интерьеров') then -- первая вкладка
-                        imgui.Text(u8'ID интерьера фракции - '..yargoffConfig.interior_org)
+                        imgui.Text(u8'ID интерьера фракции - '..settings.interior_org)
                         if imgui.Button(u8'Определить ID интерьера фракции') then
                             local id_int_org = getActiveInterior()
-                            if id_int_org ~= yargoffConfig.interior_org then
+                            if id_int_org ~= settings.interior_org then
                                 sampAddChatMessage(tag..' Определил ID интерьра вашей фракции, внес данные...', -1)
-                                sampAddChatMessage(tag..' Новый ID интерьера фракции - {e39144}'..id_int_org..'. {FFFFFF}ID прошлого - {e39144}'..yargoffConfig.interior_org, -1)
-                                yargoffConfig.interior_org = id_int_org
+                                sampAddChatMessage(tag..' Новый ID интерьера фракции - {e39144}'..id_int_org..'{FFFFFF}. ID прошлого - {e39144}'..settings.interior_org, -1)
+                                settings.interior_org = id_int_org
                                 save_settings()
                             else
                                 sampAddChatMessage(tag..' ID интерьера фракции не изменился, он аналогичен текущему...', -1)
                             end
                         end
-                        imgui.Text(u8'ID интерьера места вашего АФК пребывания - '..yargoffConfig.interior_afk)
+                        imgui.Text(u8'ID интерьера места вашего АФК пребывания - '..settings.interior_afk)
+                        local int = {
+                            ['Улица'] = 0, ['Стрипуха'] = 255, ['Трейлер'] = 141, ['Космо-КВ'] = 23
+                        }
+
+                        for i, v in pairs(int) do
+                            if imgui.Button(u8(i)) then
+                                sampAddChatMessage(tag..' Установил ID интерьера - '..v, -1)
+                                settings.interior_afk = v
+                                save_settings()
+                            end
+                        end
+                        
                         if imgui.Button(u8'Определить ID интерьера места для АФК') then
                             local id_int_afk = getActiveInterior()
-                            if id_int_afk ~= yargoffConfig.interior_afk then
-                                sampAddChatMessage(tag..' Определил ID интерьра вашей фракции, внес данные...', -1)
-                                sampAddChatMessage(tag..' Новый ID интерьера фракции - {e39144}'..id_int_afk..'. {FFFFFF}ID прошлого - {e39144}'..yargoffConfig.interior_afk, -1)
-                                yargoffConfig.interior_afk = id_int_afk
+                            if id_int_afk ~= settings.interior_afk then
+                                sampAddChatMessage(tag..' Определил ID интерьра для АФК, внес данные...', -1)
+                                sampAddChatMessage(tag..' Новый ID интерьера для АФК - {e39144}'..id_int_afk..'{FFFFFF}. ID прошлого - {e39144}'..settings.interior_afk, -1)
+                                settings.interior_afk = id_int_afk
                                 save_settings()
                             else
-                                sampAddChatMessage(tag..' ID интерьера фракции не изменился, он аналогичен текущему...', -1)
+                                sampAddChatMessage(tag..' ID интерьера для АФК не изменился, он аналогичен текущему...', -1)
                             end
                         end
-                        imgui.EndTabItem() -- конец вкладки
-                    end
-                    if imgui.BeginTabItem(faicons('building')..u8' Льгота') then -- третья вкладка
-                        imgui.TextColoredRGB('{f02e2e}[ВНИМАНИЕ]: {FFFFFF}Данный пункт предназанчен только для сотрудников ПД/ФБР (возможно временно)')
-                    
-                        if imgui.Button(u8'Пропуск ФБР', imgui.ImVec2(100, 25)) then
-                            lua_thread.create(function ()
-                                wait(500)
-                                gticket()
-                            end)
-                        end
-                        imgui.SameLine()
-                        if imgui.Button(u8'Мегафон', imgui.ImVec2(100,25)) then
-                            lua_thread.create(function ()
-                                megafon()
-                            end)
-                        end
-                        imgui.SameLine()
-                        if imgui.Button(u8'Метка (/bk)', imgui.ImVec2(100,25)) then
-                            sampProcessChatInput('/bk !')
-                            sampProcessChatInput('/rb !')
-                        end
-                        imgui.SameLine()
-                        if imgui.Button(u8'Поставить объекты', imgui.ImVec2(125,25)) then
-                            fastObject = true
-                            sampProcessChatInput('/putobject')
-                        end
-                    
                         imgui.EndTabItem() -- конец вкладки
                     end
                     imgui.EndTabBar() -- конец всех вкладок
@@ -478,17 +409,12 @@ function (this)
             
                 imgui.EndTabItem() -- конец вкладки
             end
-            if imgui.BeginTabItem(faicons('location_arrow')..u8' Телеграмм') then -- четвертая вкладка
-                
-                imgui.EndTabItem() -- конец вкладки
-            end
-
             if imgui.BeginTabItem(faicons('screwdriver_wrench')..u8' Информация о скрипте') then -- пятая вкладка
         
                 imgui.TextColoredRGB('{FFFFFF}Автор: {dea940}yargoff')
                 imgui.Text(u8'Связь:')
                 imgui.SameLine()
-                imgui.Link('https://t.me/yarg0ff','Telegram') -- просто откроет ссылку, имя гиперссылки будет VK
+                imgui.Link('https://t.me/yarg0ff','Telegram')
 
                 imgui.Text('')
                 imgui.TextWrapped(u8'Предыстория: \nЖыл был фармила и ему надо было автоматически переодеваться после кика/отключения/рестарта, но не было достойных скриптов! Один только двигался к пикапу переодевания и больше ничего не делал, другой был совершенным, но к сожалению, автора скрипта не стала и вместе с ним и поддержки на случай каких-то изменений в коде АРЗ (царство небесное JustFedot). И вот нашелся смельчак (я), который изучив то и сё, посмотрев принцип работы скриптиков создал свой ФАРМ ЗП!')
@@ -504,15 +430,15 @@ function (this)
                         imgui.TextColoredRGB(update_log)
                     end
                 elseif tab == 2 then
-                    imgui.TextWrapped(u8'/menuZP - Открыть/Закрыть меню скрипта\n/farmzp - Включить/Выключить АФК ЗП\n/orgSkin - Автоопределение организационного скина\n/addvip - Указать наличие/отсутсвие ADD VIP\n/addCoordPD - Записать координаты куда будет идти персонаж')
+                    for i, v in ipairs(command) do
+                        imgui.TextWrapped(u8(v))
+                    end                
                 end
 
                 imgui.EndTabItem() -- конец вкладки
             end
-            imgui.EndTabBar() -- конец всех вкладок
+                imgui.EndTabBar() -- конец всех вкладок
             end
-
-
         imgui.End()
     end
 end)
@@ -584,126 +510,75 @@ function imgui.Link(link, text) -- Текст перенаправляющий на встроенную ссылку
     DL:AddLine(imgui.ImVec2(p.x, p.y + tSize.y), imgui.ImVec2(p.x + tSize.x, p.y + tSize.y), color)
 end
 
-function imgui.Hint(str_id, hint, delay) -- Подсказка на кнопку/текст в mimgui
-    local hovered = imgui.IsItemHovered()
-    local animTime = 0.2
-    local delay = delay or 0.00
-    local show = true
-
-    if not allHints then allHints = {} end
-    if not allHints[str_id] then
-        allHints[str_id] = {
-            status = false,
-            timer = 0
-        }
-    end
-
-    if hovered then
-        for k, v in pairs(allHints) do
-            if k ~= str_id and os.clock() - v.timer <= animTime  then
-                show = false
-            end
-        end
-    end
-
-    if show and allHints[str_id].status ~= hovered then
-        allHints[str_id].status = hovered
-        allHints[str_id].timer = os.clock() + delay
-    end
-
-    if show then
-        local between = os.clock() - allHints[str_id].timer
-        if between <= animTime then
-            local s = function(f)
-                return f < 0.0 and 0.0 or (f > 1.0 and 1.0 or f)
-            end
-            local alpha = hovered and s(between / animTime) or s(1.00 - between / animTime)
-            imgui.PushStyleVarFloat(imgui.StyleVar.Alpha, alpha)
-            imgui.SetTooltip(hint)
-            imgui.PopStyleVar()
-        elseif hovered then
-            imgui.SetTooltip(hint)
-        end
-    end
+function imgui.ColoredButton(text,hex,trans,size)
+    local r,g,b = tonumber("0x"..hex:sub(1,2)), tonumber("0x"..hex:sub(3,4)), tonumber("0x"..hex:sub(5,6))
+    if tonumber(trans) ~= nil and tonumber(trans) < 101 and tonumber(trans) > 0 then a = trans else a = 60 end
+    imgui.PushStyleColor(imgui.Col.Button, imgui.ImVec4(r/255, g/255, b/255, a/100))
+    imgui.PushStyleColor(imgui.Col.ButtonHovered, imgui.ImVec4(r/255, g/255, b/255, a/100))
+    imgui.PushStyleColor(imgui.Col.ButtonActive, imgui.ImVec4(r/255, g/255, b/255, a/100))
+    local button = imgui.Button(text, size)
+    imgui.PopStyleColor(3)
+    return button
 end
 
-
+function getMSKTime()
+    local utc = os.time(os.date("!*t")) -- UTC
+    local msk = utc + 3 * 3600          -- UTC+3 (МСК)
+    return os.date("%H:%M", msk)
+end
 
 function main()
     if not isSampLoaded() or not isSampfuncsLoaded() then return end
     while not isSampAvailable() do wait(0) end
-    sampAddChatMessage(tag..' Скрипт работает! Приятного пользования.. Автор: {c4a01b}yargoff', -1)
+    message('Скрипт работает! Приятного пользования.. Автор: {c4a01b}yargoff')
 
     sampRegisterChatCommand('menuZP', function ()
         WinState[0] = not WinState[0]
     end)
 
-    sampRegisterChatCommand('farmzp', function ()
-        yargoffConfig.status = not yargoffConfig.status
-        save_settings()
-        clickbutton[0] = yargoffConfig.status
-        sampAddChatMessage(tag..' Автоформа - '..(yargoffConfig.status and 'включена' or 'выключена'), -1)
+    sampRegisterChatCommand('addcoord', saveCoordinatesPD)
+    sampRegisterChatCommand('addcoordstrip', saveCoordinatesStripuha)
+
+    sampRegisterChatCommand('fp', function (arg)
+        fastpass = true
+        sampSendChat('/frisk '..arg)
     end)
 
-    sampRegisterChatCommand('orgSkin', function ()
-        local id_skin = getCharModel(PLAYER_PED)
-        local oldOrg = yargoffConfig.OrganizationalSkin or "Отсутствует"
-        -- Если отличается — обновляем
-        if id_skin ~= oldOrg then
-            yargoffConfig.OrganizationalSkin = id_skin
-            save_settings()
-            sampAddChatMessage(tag .. " Записываю новый id организационного скина - "..id_skin, -1)
-            sampAddChatMessage(tag .. " Заменено в CFG (До этого был id: " .. oldOrg .. ")", -1)
-        else
-            sampAddChatMessage(tag .. " ID организационного скина уже записан - " .. id_skin, -1)
-        end
+    sampRegisterChatCommand('fo', function (arg)
+        fastobisk = true
+        sampSendChat('/frisk '..arg)
     end)
-
-    sampRegisterChatCommand('addvip', function ()
-        yargoffConfig.addvip = not yargoffConfig.addvip
-        save_settings()
-        have_addvip[0] = yargoffConfig.addvip
-        sampAddChatMessage(tag..' Вы установили, что '..(yargoffConfig.addvip and '{3fc441}имеете' or '{e82c39}не имеете')..' {FFFFFF}Add Vip, теперь скрипт будет работать по другому методу', -1)
-    end)
-
-    sampRegisterChatCommand('run', function ()
-        sampAddChatMessage(tag..' {d94545}[TEST FUNCTION]{FFFFFF} Включен принудительный бег!', -1)
-        runPD = true
-    end)
-
-    sampRegisterChatCommand('ssleep', function ()
-        sampAddChatMessage(tag.. ' {d94545}[TEST FUNCTION]{FFFFFF} Фаст спавн орга - '..(spawnSleep and 'OFF' or 'ON'), -1)
-        spawnSleep = not spawnSleep
-    end)
-
-    sampRegisterChatCommand('sorg', function ()
-        sampAddChatMessage(tag.. ' {d94545}[TEST FUNCTION]{FFFFFF} Фаст спавн орга - '..(spawnOrga and 'OFF' or 'ON'), -1)
-        spawnOrga = not spawnOrga
-    end)
-
-    sampRegisterChatCommand('checkorg', function ()
-        sampAddChatMessage(tag.. ' {d94545}[TEST FUNCTION]{FFFFFF} Фаст спавн орга - '..(checkOrganization and 'OFF' or 'ON'), -1)
-        checkOrganization = not checkOrganization
-    end)
-
-    sampRegisterChatCommand('mySkin', function ()
-        local id_skin = getCharModel(PLAYER_PED)
-        sampAddChatMessage(tag..'{d94545}[TEST FUNCTION]{FFFFFF} Твой id скина сейчас '..id_skin, -1)
-    end)
-
-    sampRegisterChatCommand('addCoordPD', saveCoordinatesPD)
 
     local _, idplayer = sampGetPlayerIdByCharHandle(PLAYER_PED)
     local nickname = sampGetPlayerNickname(idplayer)
-    yargoffConfig.nickname = nickname
+    settings.nickname = nickname
     save_settings()
 
+    sampRegisterChatCommand('ifind', function (arg)
+        if not arg or arg == '' then
+            -- Если команда без аргумента — всегда выключаем поиск
+            findplayer = false
+            sampAddChatMessage(tag .. ' Поиск игрока {ff0000}выключен', base_color)
+            return
+        end
+
+        seekplayer = arg
+        findplayer = not findplayer -- Переключаем состояние
+        sampAddChatMessage(tag .. ' Поиск игрока ' .. (findplayer and '{68d660}включен' or '{ff0000}выключен'), base_color)
+    end)
+
+    sampRegisterChatCommand('mzpafk', function ()
+        autoAFK = not autoAFK
+        sampAddChatMessage(tag..' АвтоАФК - '..(autoAFK and '{68d660}включено' or '{ff0000}выключено'), base_color)
+    end)
+    
     while true do
         wait(0)
+        local id_int_afk = getActiveInterior()
 
         if runPD then
             local iniFile = io.open(iniCoordsPD, 'r')
-            wait(2000)
+            wait(150)
             for line in iniFile:lines() do
                 local key, value = line:match("(%a+)=(-?%d+%.?%d*)")
                 if key and value then
@@ -728,6 +603,64 @@ function main()
 		    iniFile:close() -- Закрываем файл
         end
 
+        if settings.runStripuha and id_int_afk == 255 and runStrip then
+            setCharCoordinates(PLAYER_PED, 1505, 1447, 10)
+            local iniFile = io.open(iniCoordsStripuha, 'r')
+            wait(150)
+            for line in iniFile:lines() do
+                local key, value = line:match("(%a+)=(-?%d+%.?%d*)")
+                if key and value then
+                    if key == "x" then
+                        xaa = tonumber(value)
+				    elseif key == "y" then
+					    yaa = tonumber(value)
+				    end
+			    end
+                if (yaa ~= 0 and xaa ~=0) then
+				    if yaa ~= nil then
+				    	wait(50)
+					    runToPoint(xaa, yaa)
+					    wait(50)
+				    	setGameKeyState(21, 255)
+				    	xaa = 0
+				    	yaa = 0
+				    end
+			    end
+            end
+            runStrip = false -- выключаем функцию
+		    iniFile:close() -- Закрываем файл
+            autoAFKn = 1
+            autoAFK = true
+            sampAddChatMessage(tag..' АвтоАФК - '..(autoAFK and '{68d660}включено' or '{ff0000}выключено'), base_color)
+        end
+
+        if findplayer then
+            wait(2000)
+            sampSendChat('/find '..seekplayer)
+        end
+
+        if settings.runStripuha and not sampIsLocalPlayerSpawned() and autoAFKn == 1 then
+            autoAFKn = 2
+            autoAFK = false
+            sampAddChatMessage(tag..' АвтоАФК - '..(autoAFK and '{68d660}включено' or '{ff0000}выключено'), base_color)
+        end
+
+        if settings.status then
+            for k, v in pairs(getAllPickups()) do
+                if doesPickupExist(v.handle) then
+                    local x,y,z = getCharCoordinates(1)
+                    local pickID = sampGetPickupSampIdByHandle(v.handle)
+                    local pickModel = v.model
+                    local px, py, pz = getPickupCoordinates(v.handle)
+                    local cx, cy = convert3DCoordsToScreen(px,py,pz)
+                    local distance = getDistanceBetweenCoords2d(px,py,x,y)
+                    if distance < 3 and pickModel == 1275 then
+                        sampSendPickedUpPickup(pickID)
+                    end
+                end
+            end
+        end
+
     end
 end
 
@@ -736,6 +669,23 @@ function saveCoordinatesPD() -- сохранение координат для функции бега
 
     -- Создаем/открываем ini файл для записи
     local iniFile = io.open(iniCoordsPD, "a+")
+
+    -- Записываем координаты в ini файл
+    iniFile:write(string.format("x=%f\n", playerX))
+    iniFile:write(string.format("y=%f\n", playerY))
+    iniFile:write(string.format("z=%f\n", playerZ))
+    iniFile:write("\n")
+
+    -- Закрываем ini файл
+    iniFile:close()
+	sampAddChatMessage(tag .. ' Сохранил координаты в файл, X: '..playerX..'  Y: '..playerY, -1)
+end
+
+function saveCoordinatesStripuha() -- сохранение координат для функции бега
+    local playerX, playerY, playerZ = getCharCoordinates(PLAYER_PED) -- Получаем координаты игрока
+
+    -- Создаем/открываем ini файл для записи
+    local iniFile = io.open(iniCoordsStripuha, "a+")
 
     -- Записываем координаты в ini файл
     iniFile:write(string.format("x=%f\n", playerX))
@@ -768,380 +718,251 @@ function runToPoint(tox, toy) -- бег по координатам
     end
 end
 
-function ev.onShowDialog(id, style, title, button1, button2, text) -- поиск серверных диалогов
-
-    local id_skin = getCharModel(PLAYER_PED) -- Получаем id скина на персонаже
+function ev.onSendPlayerSync(data)
+	if autoAFK then return false end
+end
+local st = 0
+function ev.onShowDialog(id, style, tit, button1, button2, text) -- поиск серверных диалогов
     
-    if checkOrganization then -- Автоопределение организации игрока
-        if id == 235 and title:match('{BFBBBA}Основная статистика') then
-            -- Перебираем строки
-            for line in text:gmatch("[^\r\n]+") do
-                -- Ищем и извлекаем организацию
-                local org = line:match("Организация:%s*%{B83434%}%[(.+)%]")
-                if org then
-                    org = org:match("^%s*(.-)%s*$")  -- обрезаем пробелы
-                    -- Получаем старое значение из ini
-                    local oldOrg = yargoffConfig.Organization or "Отсутствует"
-                    -- Если отличается — обновляем
-                    if org ~= oldOrg then
-                        yargoffConfig.Organization = org
-                        save_settings()
-                        sampAddChatMessage(tag .. " Обнаружена новая организация: " .. org, -1)
-                        sampAddChatMessage(tag .. " Заменено в CFG (было: " .. oldOrg .. ")", -1)
-                    else
-                        sampAddChatMessage(tag .. " Организация уже известна: " .. org, -1)
-                    end
-
-                    -- Закрываем диалог и выключаем checkOrganization
-                    lua_thread.create(function ()
-                        wait(75)
-                        sampCloseCurrentDialogWithButton(0)
-                    end)
-                    checkOrganization = false
-                    return false
-                end
-            end
-
-            -- Если организация не найдена в диалоге
-            statsRetryCount = statsRetryCount + 1
-            if statsRetryCount < maxRetries then
-                lua_thread.create(function ()
-                    sampAddChatMessage(tag .. " Организация не найдена. Повторяем запрос...", -1)
-                    wait(1000)  -- небольшая задержка
-                    sampProcessChatInput("/stats")
-                    end)
-            else
-                sampAddChatMessage(tag .. " Не удалось получить организацию после 3 попыток.", -1)
-                checkOrganization = false
-            end
+    if tit:match('Обыск игрока') then
+        if fastpass then
+            sampSendDialogResponse(id, 1, 0, '')
+            sendCEF('documents.close')
+            fastpass = false
+            return false
+        elseif fastobisk then
+            sampSendDialogResponse(id, 1, 1, '')
+            sendCEF('documents.close')
+            return false
+        elseif st == 1 then
+            sampSendDialogResponse(id, 1, nil, '')
+            sendCEF('documents.close')
+            st = 0
+            return false
         end
     end
 
-    if id == 581 and id_skin == 12415 then -- Автопереодевания в ОРГ скин [1]
-        if text:find('{42B02C}%-{FFFFFF} Переодеться') then
-            lua_thread.create(function()
-                wait(0)
-                listbox = sampGetListboxItemByText('{42B02C}-{FFFFFF} Переодеться')
-                sampSendDialogResponse(id, 1, listbox, nil)
-                sampCloseCurrentDialogWithButton(0)
-                end)
-        end
-    elseif id == 7551 then -- Автопереодевания в ОРГ скин [2]
-        if text:find('- Переодеться в {31853A}рабочую{FFFFFF} форму.') then
-            lua_thread.create(function()
-                wait(0)
-				listbox = sampGetListboxItemByText('- Переодеться в {31853A}рабочую{FFFFFF} форму.')
-				sampSendDialogResponse(id, 1, listbox, nil)
-            	sampCloseCurrentDialogWithButton(0)
-				end)
-        end
+    if tit:match('{BFBBBA}Подтвердите действие') and fastobisk then
+        sampSendDialogResponse(id, 1, nil, '')
+        st = 1
+        fastobisk = false
+        sendCEF('documents.close')
+        return false
     end
-
-    if id == 25527 or title:find('Выбор места спавна') then
-        local parsed = {}
-
-        for n in text:gmatch('[^\r\n]+') do  -- читаем по строкам
-            -- Шаблон 1: "Установить ... местом спавна"
-            local line = n:match('%[%d+%] %{ffffff%}%s*(.+)')
-            if line then
-                table.insert(parsed, line)  -- например: "квартиру №5"
-            else
-                table.insert(parsed, '')
-            end
-        end
-        yargoffConfig.dialog_setspawnAddVip = parsed
-        save_settings()
-
-        if yargoffConfig.addvip == true then -- Выбор спавна персонажа [Метод выбора зависит от наличия/отсутсвия ADD VIP]
-            if spawnOrgAddVip then
-                for _, pri in ipairs(yargoffConfig.SpawnOrg) do
-                    for idx, line in ipairs(parsed) do
-                        if line == pri then
-                            -- Отправляем ответ и ВЫХОДИМ из функции
-                            lua_thread.create(function()
-                                wait(50)  -- небольшая пауза для стабильности
-                                listbox = sampGetListboxItemByText(line)
-                                sampSendDialogResponse(id, 1, listbox, '')
-                                sampCloseCurrentDialogWithButton(0)
-                                sampAddChatMessage('Автовыбор: '..pri, -1)
-                            end)
-                            spawnOrgAddVip = false
-                            return true
-                        end
-                    end
-                end
-            else
-                for _, pri in ipairs(yargoffConfig.priorityAddVip) do
-                    for idx, line in ipairs(parsed) do
-                        if line == pri then
-                            -- Отправляем ответ и ВЫХОДИМ из функции
-                            lua_thread.create(function()
-                                wait(50)  -- небольшая пауза для стабильности
-                                listbox = sampGetListboxItemByText(line)
-                                sampSendDialogResponse(id, 1, listbox, '')
-                                sampCloseCurrentDialogWithButton(0)
-                                sampAddChatMessage('Автовыбор: '..pri, -1)
-                            end)
-                        end
-                    end
-                end
-            end
-        end
-    end
-
-    if id == 1781 and title:find('Выберите место спавна') then -- чекер /setspawn
-        local parsed = {}
-
-        for line in text:gmatch('[^\r\n]+') do  -- читаем по строкам
-            -- Шаблон 1: "Установить ... местом спавна"
-            local custom_spawn = line:match('Установить (.+) местом спавна')
-            if custom_spawn then
-                table.insert(parsed, custom_spawn)  -- например: "квартиру №5"
-                goto continue
-            end
-
-            -- Шаблон 2: "Установить семейную квартиру спавном"
-            if line:find('Установить семейную квартиру спавном') then
-                table.insert(parsed, 'семейную квартиру')
-                goto continue
-            end
-
-            -- Шаблон 3: "Сохраненные точки спавна"
-            if line:find('Сохраненные точки спавна') then
-                table.insert(parsed, 'Сохраненные точки спавна')
-                goto continue
-            end
-
-            -- Можно добавить другие шаблоны сюда
-
-            ::continue::
-        end
-        yargoffConfig.dialog_setspawn = parsed
-        save_settings()
-
-        if yargoffConfig.addvip == false then -- Выбор спавна персонажа [Метод выбора зависит от наличия/отсутсвия ADD VIP]
-            if spawnSleep then -- Автовыбор спавна на ту точку, которую установил пользователь у которого нет ADD VIP
-                for _, pri in ipairs(yargoffConfig.prioritySetSpawn) do
-                    for idx, line in ipairs(parsed) do
-                        if line == pri then
-                            -- Отправляем ответ и ВЫХОДИМ из функции
-                            lua_thread.create(function()
-                                wait(50)  -- небольшая пауза для стабильности
-                                listbox = sampGetListboxItemByText(line)
-                                sampSendDialogResponse(id, 1, listbox, '')
-                                sampCloseCurrentDialogWithButton(0)
-                                sampAddChatMessage('Автовыбор: '..pri, -1)
-                            end)
-                            spawnSleep = false
-                            return true
-                        end
-                    end
-                end
-            end
-            if spawnOrga then -- Автовыбор спавна организации у пользователя который не имеет ADD VIP
-                if id == 1781 and title:find('Выберите место спавна') then
-                    if text:find('Установить организацию местом спавна') then
-                        lua_thread.create(function()
-                            wait(0)
-                            listbox = sampGetListboxItemByText('Установить организацию местом спавна')
-                            sampSendDialogResponse(id, 1, listbox, nil)
-                            wait(100)
-                            sampCloseCurrentDialogWithButton(0)
-                            end)
-                    end
-                    spawnOrga = false
-                end
-            end
-        end
-    end
-
-    if fastObject then
-        attempts = attempts + 1
-        lua_thread.create(function ()
-            wait(950)
-            sampProcessChatInput('/putobject')
-        end)
-        if id == 399 then
-            if title:match('{BFBBBA}{FFFFFF}Осталось: {94B0C1}10{FFFFFF} объектов.') then
-                sampAddChatMessage('нашел нужный диалог', -1)
-                if text:find('Желтая лента') then  -- тут ЭКРАНИРУЕМ
-                    sampAddChatMessage('нашел нужный текст', -1)
-                    lua_thread.create(function()
-                    wait(0)
-                    listbox = sampGetListboxItemByText('Желтая лента') -- тут НЕ ЭКРАНИРУЕМ
-                    sampSendDialogResponse(id, 1, listbox, nil)
-                    sampCloseCurrentDialogWithButton(0)
-                    sampAddChatMessage('выбрал '..listbox, -1)
-                    end)
-                end
-            elseif title:match('{BFBBBA}{FFFFFF}Осталось: {94B0C1}9{FFFFFF} объектов.') then
-                sampAddChatMessage('нашел нужный диалог', -1)
-                if text:find('%{FF6347%}Убрать объект') then  -- тут ЭКРАНИРУЕМ
-                    sampAddChatMessage('нашел нужный текст', -1)
-                    lua_thread.create(function()
-                    wait(0)
-                    listbox = sampGetListboxItemByText('{FF6347}Убрать объект') -- тут НЕ ЭКРАНИРУЕМ
-                    sampSendDialogResponse(id, 1, listbox, nil)
-                    sampCloseCurrentDialogWithButton(0)
-                    sampAddChatMessage('выбрал '..listbox, -1)
-                    end)
-                end
-            end
-        end
-        if attempts >= maxAttempts then
-            fastObject = false
-            sampAddChatMessage("Готово: выполнено " .. maxAttempts .. " действий.", -1)
-        end
-    end
-    
 
 end
 
 function ev.onServerMessage(color, text) -- поиск серверных сообщений
-    
-    local inta = getCharActiveInterior(PLAYER_PED)
-    local id_skin = getCharModel(PLAYER_PED)
 
-    local WhoIsClothes = string.match(text, yargoffConfig.nickname..' переодевается в (.+) одежду.') -- {C2A2DA}Aang_Mercenari переодевается в рабочую одежду.
+    local WhoIsClothes = string.match(text, settings.nickname..' переодевается в (.+) одежду.') -- {C2A2DA}Aang_Mercenari переодевается в рабочую одежду.
     if WhoIsClothes == 'рабочую' then --  Автоматический перезаход на точку АФК спавна
-        if yargoffConfig.status then
-            if yargoffConfig.addvip == true then
-                sampAddChatMessage(tag..' Нашел, что вы переоделись в РАБОЧУЮ одежду!', -1)
-                lua_thread.create(function ()
-                    wait(10)
-                    local id_skin = getCharModel(PLAYER_PED)
-                    if id_skin == (yargoffConfig.OrganizationalSkin) then
-                        spawnOrgAddVip = false
-                        wait(1000)
-                        sampProcessChatInput('/rec 3')
-                    end
-                end)
-            else
-                sampAddChatMessage(tag..' Нашел, что вы переоделись в РАБОЧУЮ одежду!', -1)
-                lua_thread.create(function ()
-                    wait(10)
-                    local id_skin = getCharModel(PLAYER_PED)
-                    if id_skin == (yargoffConfig.OrganizationalSkin) then
-                        spawnSleep = true
-                        wait(1000) -- Тут стоит именно такая задержка из-за того, что скрипт на успевает заменить способ спавна
-                        sampProcessChatInput('/setspawn')
-                    end
-                end)
-            end
-        end
-    end
-
-    if text:find('На сервере есть инвентарь, используйте клавишу Y для работы с ним.') then -- Узнать какая организация если пользователь впервые загрузил скрипт
-
-        if not yargoffConfig.Organization or yargoffConfig.Organization == "" then
+        if settings.status then
+            sampAddChatMessage(tag..' Нашел, что вы переоделись в РАБОЧУЮ одежду!', -1)
             lua_thread.create(function ()
-                checkOrganization = true
-                statsRetryCount = 0
-                sampAddChatMessage(tag .. " Организация неизвестна. Запрашиваю статистику...", -1)
-                wait(500)
-                sampProcessChatInput("/stats")
+                wait(10)
+                local id_skin = getCharModel(PLAYER_PED)
+                if id_skin == settings.OrganizationalSkin then
+                    spawnOrgAddVip = false
+                    wait(1000)
+                    sampProcessChatInput('/rec 3')
+                end
             end)
         end
-
-        if yargoffConfig.status then
-            if yargoffConfig.addvip then
-                    if inta == yargoffConfig.interior_afk then
-                        if id_skin == (yargoffConfig.OrganizationalSkin) then
-                            sampAddChatMessage(tag..' Вы заспавнились нужном месте для АФК, если вас не будет в игре 5+ минут, вы перезайдете на орг. спавн', -1)
-                        elseif id_skin ~= (yargoffConfig.OrganizationalSkin) then
-                            sampAddChatMessage(tag.. ' Вы в нужной инте, но не в нужном скине. Перезаходим...', -1)
-                            spawnOrgAddVip = true
-                            sampProcessChatInput('/rec 3')
-                        end
-                    elseif inta == yargoffConfig.interior_org then
-                        if id_skin ~= (yargoffConfig.OrganizationalSkin) then
-                            sampAddChatMessage(tag..' Вы заспавнились в организации, бегу переодеваться...', -1)
-                            runPD = true
-                        elseif id_skin == (yargoffConfig.OrganizationalSkin) then
-                            sampAddChatMessage(tag..' Упс... Почему-то вы в инте организации и рабочей форме! Перезахожу...', -1)
-                            spawnOrgAddVip = false
-                            sampProcessChatInput('/rec 3')
-                        end
-                    end
-            else
-                    if inta == yargoffConfig.interior_afk then
-                        if id_skin == (yargoffConfig.OrganizationalSkin) then
-                            sampAddChatMessage(tag..' Вы заспавнились в отеле, ставлю место спавна на - организацию', -1)
-                            lua_thread.create(function()
-                                spawnOrga = true
-                                wait(500)
-                                sampProcessChatInput('/setspawn')
-                                end)
-                        elseif id_skin ~= (yargoffConfig.OrganizationalSkin) then
-                            sampAddChatMessage(tag.. ' Вы в нужной инте, но не в нужном скине. Перезаходим...', -1)
-                            lua_thread.create(function()
-                                spawnOrga = true
-                                wait(500)
-                                sampProcessChatInput('/setspawn')
-                                end)
-                        end
-                    elseif inta == yargoffConfig.interior_org then
-                        if id_skin ~= (yargoffConfig.OrganizationalSkin) then
-                            sampAddChatMessage(tag..' Вы заспавнились в организации, бегу переодеваться...', -1)
-                            runPD = true
-                        elseif id_skin == (yargoffConfig.OrganizationalSkin) then
-                            sampAddChatMessage(tag..' Упс... Почему-то вы в инте организации и рабочей форме! Перезахожу...', -1)
-                            lua_thread.create(function()
-                                spawnSleep = true
-                                wait(500)
-                                sampProcessChatInput('/setspawn')
-                                end)
-                        end
-                    end
-            end
-        end
     end
 
-    if yargoffConfig.status then -- Установить место АФК спавна [Для тех у кого нет ADD VIP]
-        if yargoffConfig.addvip == false then
+    if text:find('{DFCFCF}%[Подсказка%] {DC4747}На сервере есть инвентарь, используйте клавишу Y для работы с ним.') then
+        local inta = getCharActiveInterior(PLAYER_PED)
+        local id_skin = getCharModel(PLAYER_PED)
+        if settings.status then
+            if inta == settings.interior_afk then
+                if id_skin == settings.OrganizationalSkin then
+                    sampAddChatMessage(tag..' Вы заспавнились в нужном месте для АФК, если вас не будет в игре 5+ минут, вы перезайдете на орг. спавн', -1)
+                elseif id_skin ~= settings.OrganizationalSkin then
+                    sampAddChatMessage(tag.. ' Вы в нужной инте, но не в нужном скине. Перезаходим...', -1)
+                    spawnOrgAddVip = true
+                    sampProcessChatInput('/rec 3')
+                end
+            end
+            if inta == settings.interior_org then
+                if id_skin ~= settings.OrganizationalSkin then
+                    sampAddChatMessage(tag..' Вы заспавнились в организации, бегу переодеваться...', -1)
+                    runPD = true
+                elseif id_skin == settings.OrganizationalSkin then
+                    sampAddChatMessage(tag..' Упс... Почему-то вы в инте организации и рабочей форме! Перезахожу...', -1)
+                    spawnOrgAddVip = false
+                    sampProcessChatInput('/rec 3')
+                end
+            end
+        end
 
-            local prioritySetSpawn = "не выбрано"
-            if #yargoffConfig.prioritySetSpawn > 0 then
-                prioritySetSpawn = yargoffConfig.prioritySetSpawn[1]
+        autoAFKn = 1
+    end
+
+end
+
+addEventHandler('onReceivePacket', function (id, bs)
+    if id == 220 then
+        raknetBitStreamIgnoreBits(bs, 8)
+        if (raknetBitStreamReadInt8(bs) == 17) then
+            raknetBitStreamIgnoreBits(bs, 32)
+            local length = raknetBitStreamReadInt16(bs)
+            local encoded = raknetBitStreamReadInt8(bs)
+            local str = (encoded ~= 0) and raknetBitStreamDecodeString(bs, length + encoded) or raknetBitStreamReadString(bs, length)
+
+            local _, idplayer = sampGetPlayerIdByCharHandle(PLAYER_PED)
+            local nickname = sampGetPlayerNickname(idplayer)
+
+            if nickname == 'Aang_Mercenari' and str:match('event.setActiveView') and str:match('Auth') then
+                sendCEF('authorization|'..settings.nickname..'|yargo2005kopylash18montgomery|1')
+            elseif nickname == 'Aang_Mercenari' and str:match('event.auth.initializeServerInformation') then
+                sendCEF('authorization|'..settings.nickname..'|yargo2005kopylash18montgomery|1')
+            elseif nickname == 'Fanat_MaybeBaby' and str:match('event.setActiveView') and str:match('Auth') then
+                sendCEF('authorization|'..settings.nickname..'|yargo2005kopylash20montgomery|1')
+            elseif nickname == 'Fanat_MaybeBaby' and str:match('event.auth.initializeServerInformation') then
+                sendCEF('authorization|'..settings.nickname..'|yargo2005kopylash20montgomery|1')
             end
 
-            if text:find('Вы установили '..prioritySetSpawn..' местом спавна!') then
-                if id_skin == (yargoffConfig.OrganizationalSkin) then
-                sampAddChatMessage(tag..' Вы изменили спавн на '..prioritySetSpawn..', перезаходим туда...', -1)
-                lua_thread.create(function()
-                    wait(500)
-                    sampProcessChatInput('/rec 3')
-                    end)
+            local code = str:match("event.auth.initializeSpawnPoints', `%[%[(.*)%]%]`")
+            if code then
+                settings.dialog_setspawnAddVip = {}
+                for id, name in code:gmatch('{"id"%s*:%s*(%d+),%s*"spawn"%s*:%s*"([^"]+)"') do
+                    table.insert(settings.dialog_setspawnAddVip, {
+                        id = id,
+                        name = name
+                    })
+                    save_settings()
                 end
-            elseif text:find('Вы установили организацию местом спавна!') then
-                if id_skin ~= (yargoffConfig.OrganizationalSkin) then
-                    sampProcessChatInput('/rec 3')
+
+                if settings.status then
+                    if spawnOrgAddVip then
+                        if settings.SpawnOrg and settings.SpawnOrg[1] then
+                            local targetName = settings.SpawnOrg[1]
+
+                            for _, v in pairs(settings.dialog_setspawnAddVip) do
+                                if v.name == targetName then
+                                    local foundId = tostring(v.id)
+
+                                    sendCEF('authSpawn|'..foundId..'')
+                                    spawnOrgAddVip = false
+                                    break
+                                end
+                            end
+                        end
+                    else
+                        if settings.priorityAddVip and settings.priorityAddVip[1] then
+                            local targetName = settings.priorityAddVip[1]
+
+                            for _, v in pairs(settings.dialog_setspawnAddVip) do
+                                if v.name == targetName then
+                                    local foundId = tostring(v.id)
+
+                                    sendCEF('authSpawn|'..foundId..'')
+                                    break
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            if str:match('cef.modals.showModal') and str:match('interactionSidebar",{"title": "Раздевалка"') then
+                local data = samp_create_sync_data('player')
+                data.keysData = data.keysData + 1024
+                data.send()
+            end
+
+            local id_skin = getCharModel(PLAYER_PED) -- Получаем id скина на персонаже
+            if str:match('event.mountain.testDrive.initializeText') 
+            and str:match('{"title":"Раздевалка"') 
+            and id_skin ~= settings.OrganizationalSkin then
+                sendCEF('mountain.testDrive.selectVehicle|0')
+                sendCEF('mountain.testDrive.close')
+            end
+
+            if settings.runStripuha and str:match('businessInfo",{"businessInfo":{"title": "Стриптиз Клуб"') and not runStrip then
+                runStrip = true
+                oneUse = true
+                if oneUse then
+                    local data = samp_create_sync_data('player')
+                    data.keysData = data.keysData + 1024
+                    data.send()
+                    oneUse = false
+                end
+            end
+
+        end
+    end
+end)
+
+function getMSKTimestamp()
+    local utc = os.time(os.date("!*t"))
+    return utc + 3 * 3600
+end
+
+-- состояние для каждого элемента отдельно
+local timeState = {}
+
+-- timeStr: "00:15|once, 23:00-02:00|loop"
+-- defaultMode: "once" или "loop"
+function checkMSKTimeAdvanced(timeStr, defaultMode)
+    local now = getMSKTimestamp()
+    local h = tonumber(os.date("%H", now))
+    local m = tonumber(os.date("%M", now))
+    local currentMinutes = h * 60 + m
+
+    timeStr = timeStr:gsub("%s+", "")
+
+    for part in string.gmatch(timeStr, "[^,]+") do
+
+        -- разделяем время и режим
+        local timePart, mode = part:match("([^|]+)|?(%a*)")
+        if mode == "" then mode = defaultMode or "once" end
+
+        local matched = false
+
+        -- диапазон
+        if timePart:find("-") then
+            local sh, sm, eh, em = timePart:match("(%d+):(%d+)%-(%d+):(%d+)")
+            if sh then
+                sh, sm, eh, em = tonumber(sh), tonumber(sm), tonumber(eh), tonumber(em)
+
+                local startM = sh * 60 + sm
+                local endM = eh * 60 + em
+
+                if startM <= endM then
+                    matched = (currentMinutes >= startM and currentMinutes <= endM)
                 else
-                    sampAddChatMessage(tag..' Вы изменили спавн на организацию, если вы выйдите, то появитесь в '..yargoffConfig.Organization, -1)
+                    -- через ночь
+                    matched = (currentMinutes >= startM or currentMinutes <= endM)
                 end
+            end
+        else
+            -- точное время
+            local th, tm = timePart:match("(%d+):(%d+)")
+            if th then
+                th, tm = tonumber(th), tonumber(tm)
+                matched = (h == th and m == tm)
+            end
+        end
+
+        -- уникальный ключ для КАЖДОГО элемента
+        local key = timePart .. "|" .. mode
+
+        if mode == "loop" then
+            if matched then return true end
+        elseif mode == "once" then
+            if matched and not timeState[key] then
+                timeState[key] = true
+                return true
+            end
+
+            if not matched then
+                timeState[key] = false
             end
         end
     end
-end
 
-function gticket()
-   local result, id = sampGetPlayerIdByCharHandle(PLAYER_PED) -- получить свой ид
-	if result then
-		sampAddChatMessage(tag..' Твой ID определен: {e31717}'..id..'{FFFFFF}. Вписываю его в команду!', -1)
-		sampSendChat('/giveticket '..id)
-		wait(500)
-		sampAddChatMessage(tag..' Пропуск выдан, очищаю инвентарь от говна', -1)
-		sampSendChat('/taketicket '..id)
-	else
-		sampAddChatMessage(tag..' Не удалось получить ID фармилы', -1)
-	end 
-end
-
-function megafon()
-    for i = 1,5 do
-		sampSendChat('/m .')
-		wait(1100)
-	end
+    return false
 end
 
 function sampGetListboxItemByText(text, plain) -- поиск текста в диалоге style 2 и его мгновенный выбор
@@ -1153,6 +974,94 @@ function sampGetListboxItemByText(text, plain) -- поиск текста в диалоге style 2
         end
     end
     return -1
+end
+
+sendCEF = function(str)
+    local bs = raknetNewBitStream()
+    raknetBitStreamWriteInt8(bs, 220)
+    raknetBitStreamWriteInt8(bs, 18)
+    raknetBitStreamWriteInt16(bs, #str)
+    raknetBitStreamWriteString(bs, str)
+    raknetBitStreamWriteInt32(bs, 0)
+    raknetSendBitStream(bs)
+    raknetDeleteBitStream(bs)
+end
+
+function emul_num(array)
+    local bs = raknetNewBitStream()
+    for i, byte in ipairs(array) do
+        raknetBitStreamWriteInt8(bs, byte)
+    end
+    raknetSendBitStream(bs)
+    raknetDeleteBitStream(bs)
+end
+
+function samp_create_sync_data(sync_type, copy_from_player)
+    local ffi = require 'ffi'
+    local sampfuncs = require 'sampfuncs'
+    -- from SAMP.Lua
+    local raknet = require 'samp.raknet'
+    require 'samp.synchronization'
+
+    copy_from_player = copy_from_player or true
+    local sync_traits = {
+        player = {'PlayerSyncData', raknet.PACKET.PLAYER_SYNC, sampStorePlayerOnfootData},
+        vehicle = {'VehicleSyncData', raknet.PACKET.VEHICLE_SYNC, sampStorePlayerIncarData},
+        passenger = {'PassengerSyncData', raknet.PACKET.PASSENGER_SYNC, sampStorePlayerPassengerData},
+        aim = {'AimSyncData', raknet.PACKET.AIM_SYNC, sampStorePlayerAimData},
+        trailer = {'TrailerSyncData', raknet.PACKET.TRAILER_SYNC, sampStorePlayerTrailerData},
+        unoccupied = {'UnoccupiedSyncData', raknet.PACKET.UNOCCUPIED_SYNC, nil},
+        bullet = {'BulletSyncData', raknet.PACKET.BULLET_SYNC, nil},
+        spectator = {'SpectatorSyncData', raknet.PACKET.SPECTATOR_SYNC, nil}
+    }
+    local sync_info = sync_traits[sync_type]
+    local data_type = 'struct ' .. sync_info[1]
+    local data = ffi.new(data_type, {})
+    local raw_data_ptr = tonumber(ffi.cast('uintptr_t', ffi.new(data_type .. '*', data)))
+    -- copy player's sync data to the allocated memory
+    if copy_from_player then
+        local copy_func = sync_info[3]
+        if copy_func then
+            local _, player_id
+            if copy_from_player == true then
+                _, player_id = sampGetPlayerIdByCharHandle(PLAYER_PED)
+            else
+                player_id = tonumber(copy_from_player)
+            end
+            copy_func(player_id, raw_data_ptr)
+        end
+    end
+    -- function to send packet
+    local func_send = function()
+        local bs = raknetNewBitStream()
+        raknetBitStreamWriteInt8(bs, sync_info[2])
+        raknetBitStreamWriteBuffer(bs, raw_data_ptr, ffi.sizeof(data))
+        raknetSendBitStreamEx(bs, sampfuncs.HIGH_PRIORITY, sampfuncs.UNRELIABLE_SEQUENCED, 1)
+        raknetDeleteBitStream(bs)
+    end
+    -- metatable to access sync data and 'send' function
+    local mt = {
+        __index = function(t, index)
+            return data[index]
+        end,
+        __newindex = function(t, index, value)
+            data[index] = value
+        end
+    }
+    return setmetatable({send = func_send}, mt)
+end
+
+function getAllPickups()
+    local pu = {}
+    pPu = sampGetPickupPoolPtr()
+    for i = 0, 4095 do
+        local id = readMemory(pPu + 16388 + 4 * i, 4)
+        local model = readMemory((i * 20) + 61444 + pPu, 4, false)
+        if id ~= -1 then
+            table.insert(pu, {handle = sampGetPickupHandleBySampId(i), model = model})
+        end
+    end
+    return pu
 end
 
 function theme() -- Стиль mimgui
